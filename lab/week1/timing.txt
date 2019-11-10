@@ -1,0 +1,70 @@
+// ID: 5282955 Zhichao He
+
+Input	Initial	Has	   Number	AvgTime	  AvgTime
+Size	Order	Dups   of runs	forusel	  forsort
+---------------------------------------- -------
+100	    random	no	     10     0.0062sec 0.0004sec
+100	    sorted	no	     10     0.0081sec 0.0008sec
+100	    reverse	no	     10     0.0076sec 0.0004sec
+100	    random	yes	     10     0.0076sec 0.0004sec
+100	    sorted	yes	     10     0.0044sec 0.0001sec
+100	    reverse	yes	     10     0.0064sec 0.0001sec
+1000	random	no	     10     0.0931sec 0.0001sec
+1000	sorted	no	     10     0.0328sec 0.0004sec
+1000	reverse	no	     10     0.0322sec 0.0004sec
+1000	random	yes	     10     0.0326sec 0.0001sec
+1000	sorted	yes	     10     0.0312sec 0.0001sec
+1000	reverse	yes	     10     0.0320sec 0.0004sec
+5000	random	no	     10     0.3642sec 0.0040sec
+5000	sorted	no	     10     0.2948sec 0.0032sec
+5000	reverse	no	     10     0.3264sec 0.0036sec
+5000	random	yes	     10     0.3020sec 0.0036sec
+5000	sorted	yes	     10     0.3268sec 0.0016sec
+5000	reverse	yes	     10     0.2952sec 0.0024sec
+10000	random	no	     10     1.4122sec 0.0094sec
+10000	sorted	no	     10     1.0020sec 0.0052sec
+10000	reverse	no	     10     0.9892sec 0.0042sec
+10000	random	yes	     10     1.4246sec 0.0106sec
+10000	sorted	yes	     10     0.9480sec 0.0048sec
+10000	reverse	yes	     10     0.8516sec 0.0048sec
+30000   random	no       10    10.9860sec 0.0048sec
+30000   sorted	no       10     7.4764sec 0.0032sec
+30000   reverse	no       10     7.2620sec 0.0048sec
+30000   random	yes      10    11.0852sec 0.0056sec
+30000   sorted	yes      10     6.9824sec 0.0056sec
+30000   reverse	yes      10     7.0264sec 0.0056sec
+50000	random	no	     10    30.2910sec 0.0304sec
+50000	sorted	no	     10    19.0413sec 0.0152sec
+50000	reverse	no	     10    19.0470sec 0.0148sec
+50000	random	yes	     10    30.7507sec 0.0336sec
+50000	sorted	yes	     10    18.9320sec 0.0152sec
+50000	reverse	yes	     10    18.9826sec 0.0154sec
+100000	random	no	     10   148.1214sec 0.0594sec
+100000	sorted	no	     10    75.1724sec 0.0256sec
+100000	reverse	no	     10    75.1924sec 0.0298sec
+100000	random	yes	     10   148.2480sec 0.0620sec
+100000	sorted	yes	     10    75.5668sec 0.0246sec
+100000	reverse	yes	     10    76.0262sec 0.0264sec
+
+Explanation about the data:
+
+From the table above, we can see that generally the time for both 
+'useIntList' and 'sort' increases as the input size increases
+ which is apparently true. Whether the list is duplicate
+almost does not affact the time, I think this is because every 
+number is treated in the same way. The initial order of the list 
+affacts the time to some extend. When the input size is < 5000,
+there is hardly any difference because the dataset is too small.
+When the input size is > 5000, random lists take more time than
+sorted and reverse lists. This is because sorted or reverse
+sorted list are in order and are more close to the final result,
+so when inserting we only need to insert the value to the start 
+or the end of the new list which saves time. Comparing the 2 
+functions. Before the input size reaches 30000, I didn't notice 
+significant difference because people hardly differenciate 1 sec 
+and 0.001sec. But after 30000, the time difference becomes obvious.
+'sort' is always much faster than 'useIntList', 'sort' is a system 
+function which must be improved to be very fast, the sort function
+used in 'useIntList' is based on the linked list data structure.
+From my research insertion sort is not the best using linked list 
+(array is better), so this explains why the function is so slow.

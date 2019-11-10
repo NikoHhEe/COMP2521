@@ -1,0 +1,20 @@
+==6194== Memcheck, a memory error detector
+==6194== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==6194== Using Valgrind-3.13.0 and LibVEX; rerun with -h for copyright info
+==6194== Command: ./testTextbuffer 04
+==6194== 
+==6194== 
+==6194== HEAP SUMMARY:
+==6194==     in use at exit: 25 bytes in 2 blocks
+==6194==   total heap usage: 28 allocs, 26 frees, 17,345 bytes allocated
+==6194== 
+==6194== LEAK SUMMARY:
+==6194==    definitely lost: 16 bytes in 1 blocks
+==6194==    indirectly lost: 9 bytes in 1 blocks
+==6194==      possibly lost: 0 bytes in 0 blocks
+==6194==    still reachable: 0 bytes in 0 blocks
+==6194==         suppressed: 0 bytes in 0 blocks
+==6194== Rerun with --leak-check=full to see details of leaked memory
+==6194== 
+==6194== For counts of detected and suppressed errors, rerun with: -v
+==6194== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

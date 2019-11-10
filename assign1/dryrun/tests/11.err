@@ -1,0 +1,143 @@
+==6438== Memcheck, a memory error detector
+==6438== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==6438== Using Valgrind-3.13.0 and LibVEX; rerun with -h for copyright info
+==6438== Command: ./testTextbuffer 11
+==6438== 
+==6438== Invalid read of size 1
+==6438==    at 0x48389B4: strlen (vg_replace_strmem.c:458)
+==6438==    by 0x10A9EF: strdup (textbuffer.c:26)
+==6438==    by 0x10BCF2: formRichText (textbuffer.c:574)
+==6438==    by 0x10A3CD: doFormRichText (testTextbuffer.c:359)
+==6438==    by 0x109E37: runRichTextTest (testTextbuffer.c:244)
+==6438==    by 0x109984: test11 (testTextbuffer.c:170)
+==6438==    by 0x1093F7: main (testTextbuffer.c:72)
+==6438==  Address 0x4bd3c57 is 0 bytes after a block of size 39 alloc'd
+==6438==    at 0x48377D5: calloc (vg_replace_malloc.c:711)
+==6438==    by 0x10BB9A: formRichText (textbuffer.c:552)
+==6438==    by 0x10A3CD: doFormRichText (testTextbuffer.c:359)
+==6438==    by 0x109E37: runRichTextTest (testTextbuffer.c:244)
+==6438==    by 0x109984: test11 (testTextbuffer.c:170)
+==6438==    by 0x1093F7: main (testTextbuffer.c:72)
+==6438== 
+==6438== Invalid read of size 1
+==6438==    at 0x48389B4: strlen (vg_replace_strmem.c:458)
+==6438==    by 0x10A9EF: strdup (textbuffer.c:26)
+==6438==    by 0x10BB03: formRichText (textbuffer.c:523)
+==6438==    by 0x10A3CD: doFormRichText (testTextbuffer.c:359)
+==6438==    by 0x109E37: runRichTextTest (testTextbuffer.c:244)
+==6438==    by 0x109984: test11 (testTextbuffer.c:170)
+==6438==    by 0x1093F7: main (testTextbuffer.c:72)
+==6438==  Address 0x4bd3d29 is 0 bytes after a block of size 25 alloc'd
+==6438==    at 0x48377D5: calloc (vg_replace_malloc.c:711)
+==6438==    by 0x10B9AB: formRichText (textbuffer.c:501)
+==6438==    by 0x10A3CD: doFormRichText (testTextbuffer.c:359)
+==6438==    by 0x109E37: runRichTextTest (testTextbuffer.c:244)
+==6438==    by 0x109984: test11 (testTextbuffer.c:170)
+==6438==    by 0x1093F7: main (testTextbuffer.c:72)
+==6438== 
+==6438== Invalid read of size 2
+==6438==    at 0x483C400: memmove (vg_replace_strmem.c:1258)
+==6438==    by 0x10AA2C: strdup (textbuffer.c:30)
+==6438==    by 0x10BB03: formRichText (textbuffer.c:523)
+==6438==    by 0x10A3CD: doFormRichText (testTextbuffer.c:359)
+==6438==    by 0x109E37: runRichTextTest (testTextbuffer.c:244)
+==6438==    by 0x109984: test11 (testTextbuffer.c:170)
+==6438==    by 0x1093F7: main (testTextbuffer.c:72)
+==6438==  Address 0x4bd3d28 is 24 bytes inside a block of size 25 alloc'd
+==6438==    at 0x48377D5: calloc (vg_replace_malloc.c:711)
+==6438==    by 0x10B9AB: formRichText (textbuffer.c:501)
+==6438==    by 0x10A3CD: doFormRichText (testTextbuffer.c:359)
+==6438==    by 0x109E37: runRichTextTest (testTextbuffer.c:244)
+==6438==    by 0x109984: test11 (testTextbuffer.c:170)
+==6438==    by 0x1093F7: main (testTextbuffer.c:72)
+==6438== 
+==6438== Invalid read of size 2
+==6438==    at 0x483C40F: memmove (vg_replace_strmem.c:1258)
+==6438==    by 0x10AA2C: strdup (textbuffer.c:30)
+==6438==    by 0x10BB03: formRichText (textbuffer.c:523)
+==6438==    by 0x10A3CD: doFormRichText (testTextbuffer.c:359)
+==6438==    by 0x109E37: runRichTextTest (testTextbuffer.c:244)
+==6438==    by 0x109984: test11 (testTextbuffer.c:170)
+==6438==    by 0x1093F7: main (testTextbuffer.c:72)
+==6438==  Address 0x4bd3de4 is 20 bytes inside a block of size 21 alloc'd
+==6438==    at 0x48377D5: calloc (vg_replace_malloc.c:711)
+==6438==    by 0x10B9AB: formRichText (textbuffer.c:501)
+==6438==    by 0x10A3CD: doFormRichText (testTextbuffer.c:359)
+==6438==    by 0x109E37: runRichTextTest (testTextbuffer.c:244)
+==6438==    by 0x109984: test11 (testTextbuffer.c:170)
+==6438==    by 0x1093F7: main (testTextbuffer.c:72)
+==6438== 
+==6438== Invalid read of size 1
+==6438==    at 0x483C438: memmove (vg_replace_strmem.c:1258)
+==6438==    by 0x10AA2C: strdup (textbuffer.c:30)
+==6438==    by 0x10BCF2: formRichText (textbuffer.c:574)
+==6438==    by 0x10A3CD: doFormRichText (testTextbuffer.c:359)
+==6438==    by 0x109E37: runRichTextTest (testTextbuffer.c:244)
+==6438==    by 0x109984: test11 (testTextbuffer.c:170)
+==6438==    by 0x1093F7: main (testTextbuffer.c:72)
+==6438==  Address 0x4bd3eaa is 0 bytes after a block of size 26 alloc'd
+==6438==    at 0x48377D5: calloc (vg_replace_malloc.c:711)
+==6438==    by 0x10BB9A: formRichText (textbuffer.c:552)
+==6438==    by 0x10A3CD: doFormRichText (testTextbuffer.c:359)
+==6438==    by 0x109E37: runRichTextTest (testTextbuffer.c:244)
+==6438==    by 0x109984: test11 (testTextbuffer.c:170)
+==6438==    by 0x1093F7: main (testTextbuffer.c:72)
+==6438== 
+==6438== Invalid read of size 2
+==6438==    at 0x483C400: memmove (vg_replace_strmem.c:1258)
+==6438==    by 0x10AA2C: strdup (textbuffer.c:30)
+==6438==    by 0x10BCF2: formRichText (textbuffer.c:574)
+==6438==    by 0x10A3CD: doFormRichText (testTextbuffer.c:359)
+==6438==    by 0x109E37: runRichTextTest (testTextbuffer.c:244)
+==6438==    by 0x109984: test11 (testTextbuffer.c:170)
+==6438==    by 0x1093F7: main (testTextbuffer.c:72)
+==6438==  Address 0x4bd3f68 is 24 bytes inside a block of size 25 alloc'd
+==6438==    at 0x48377D5: calloc (vg_replace_malloc.c:711)
+==6438==    by 0x10BB9A: formRichText (textbuffer.c:552)
+==6438==    by 0x10A3CD: doFormRichText (testTextbuffer.c:359)
+==6438==    by 0x109E37: runRichTextTest (testTextbuffer.c:244)
+==6438==    by 0x109984: test11 (testTextbuffer.c:170)
+==6438==    by 0x1093F7: main (testTextbuffer.c:72)
+==6438== 
+==6438== Conditional jump or move depends on uninitialised value(s)
+==6438==    at 0x10AEB8: dumpTB (textbuffer.c:175)
+==6438==    by 0x10A180: doDumpTB (testTextbuffer.c:319)
+==6438==    by 0x10A490: showTB (testTextbuffer.c:376)
+==6438==    by 0x109E4F: runRichTextTest (testTextbuffer.c:245)
+==6438==    by 0x109984: test11 (testTextbuffer.c:170)
+==6438==    by 0x1093F7: main (testTextbuffer.c:72)
+==6438== 
+==6438== Conditional jump or move depends on uninitialised value(s)
+==6438==    at 0x48389B8: strlen (vg_replace_strmem.c:458)
+==6438==    by 0x10AEC8: dumpTB (textbuffer.c:178)
+==6438==    by 0x10A180: doDumpTB (testTextbuffer.c:319)
+==6438==    by 0x10A490: showTB (testTextbuffer.c:376)
+==6438==    by 0x109E4F: runRichTextTest (testTextbuffer.c:245)
+==6438==    by 0x109984: test11 (testTextbuffer.c:170)
+==6438==    by 0x1093F7: main (testTextbuffer.c:72)
+==6438== 
+==6438== Conditional jump or move depends on uninitialised value(s)
+==6438==    at 0x4838680: strcat (vg_replace_strmem.c:307)
+==6438==    by 0x10B043: dumpTB (textbuffer.c:198)
+==6438==    by 0x10A180: doDumpTB (testTextbuffer.c:319)
+==6438==    by 0x10A490: showTB (testTextbuffer.c:376)
+==6438==    by 0x109E4F: runRichTextTest (testTextbuffer.c:245)
+==6438==    by 0x109984: test11 (testTextbuffer.c:170)
+==6438==    by 0x1093F7: main (testTextbuffer.c:72)
+==6438== 
+==6438== 
+==6438== HEAP SUMMARY:
+==6438==     in use at exit: 192 bytes in 8 blocks
+==6438==   total heap usage: 39 allocs, 31 frees, 18,131 bytes allocated
+==6438== 
+==6438== LEAK SUMMARY:
+==6438==    definitely lost: 157 bytes in 7 blocks
+==6438==    indirectly lost: 35 bytes in 1 blocks
+==6438==      possibly lost: 0 bytes in 0 blocks
+==6438==    still reachable: 0 bytes in 0 blocks
+==6438==         suppressed: 0 bytes in 0 blocks
+==6438== Rerun with --leak-check=full to see details of leaked memory
+==6438== 
+==6438== For counts of detected and suppressed errors, rerun with: -v
+==6438== Use --track-origins=yes to see where uninitialised values come from
+==6438== ERROR SUMMARY: 14 errors from 9 contexts (suppressed: 0 from 0)

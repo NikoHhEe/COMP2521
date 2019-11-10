@@ -1,0 +1,20 @@
+From the table above, we can see that generally the time for both 
+'useIntList' and 'sort' increases as the input size increases
+ which is apparently true. Whether the list is duplicate
+almost does not affact the time, I think this is because every 
+number is treated in the same way. The initial order of the list 
+affacts the time to some extend. When the input size is < 5000,
+there is hardly any difference because the dataset is too small.
+When the input size is > 5000, random lists take more time than
+sorted and reverse lists. This is because sorted or reverse
+sorted list are in order and are more close to the final result,
+so when inserting we only need to insert the value to the start 
+or the end of the new list which saves time. Comparing the 2 
+functions. Before the input size reaches 30000, I didn't notice 
+significant difference because people hardly differenciate 1 sec 
+and 0.001sec. But after 30000, the time difference becomes obvious.
+'sort' is always much faster than 'useIntList', 'sort' is a system 
+function which must be improved to be very fast, the sort function
+used in 'useIntList' is based on the linked list data structure.
+From my research insertion sort is not the best using linked list 
+(array is better), so this explains why the function is so slow.
