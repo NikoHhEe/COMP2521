@@ -217,6 +217,12 @@ int findPath(Graph g, Vertex src, Vertex dest, int max, int *path)
         /* free all the route */
         dropQueue(route[i]);
     }
+<<<<<<< HEAD
     
 	return 0;
+=======
+    printf("Uncussfull found \n\n" );
+    // couldn't find a path
+	return 0; // never find a path ... you need to fix this
+>>>>>>> 8504876c7f561c4280d8f1b7404d6090e548fc0d
 }
