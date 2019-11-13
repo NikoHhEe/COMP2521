@@ -6,7 +6,7 @@
 #include "Dijkstra.h"
 #include "Graph.h"
 
-#define INFI 0x7fffffff
+#define INFI 63356
 
 static ItemPQ createItem(int key, int value);
 static void updatePred(PredNode **list, int v, int w);
