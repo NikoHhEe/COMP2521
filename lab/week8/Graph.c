@@ -11,6 +11,8 @@
 
 void cleanQueue(Queue q);
 
+const char* __asan_default_options() { return "detect_leaks=0"; }
+
 // graph representation (adjacency matrix)
 typedef struct GraphRep {
 	int    nV;    // #vertices
@@ -106,123 +108,104 @@ void showGraph(Graph g, char **names)
 }
 
 // a method to store the path, by using the bfs, the max path would be sorte
-// is 30, prevent some overhead, seted 35
+// is 30, prevent some overhead, seted 31
 // using the queue structure to record the path
-Queue route[35];
+Queue routeList[31];
 // index currently occupied route
-int route_occupy[35]={0};
+int occuRoute[31]={0};
 
 int routeEmpty(){
     int i =0;
-    for (i = 0; i < 35; i++) {
-        /* serch in route_occupy array */
-        if (route_occupy[i] == 0) {
+    for (i = 0; i < 31; i++) {
+        /* serch in occuRoute array */
+        if (occuRoute[i] == 0) {
             /* this route is empty */
-            route_occupy[i] = 1;
+            occuRoute[i] = 1;
             return i;
         }
     }
-    exit(1);
+    return -1;
 }
 
 // find a path between two vertices using breadth-first traversal
 // only allow edges whose weight is less than "max"
 int findPath(Graph g, Vertex src, Vertex dest, int max, int *path)
 {
-    // have to have these variables
     assert(g != NULL);
 
     int visited[30];
 
-    // create a queue to do BFS
     Queue q = newQueue();
 
-    // initial all the path
-    for (int i = 0; i <35; i++){
-        route[i] = newQueue();
+    // initialization
+    for (int i = 0; i <31; i++){
+        routeList[i] = newQueue();
     }
-    if (src == dest ) {
-        /* special case, not need to Search */
-        path[0] = src;
-        return 1;
-    }
-    // push the first route into queue
-    QueueJoin(route[0],src);
+
+    QueueJoin(routeList[0], src);
     QueueJoin(q, 0);
-    route_occupy[0] =1;
-    // try to find a path by BFS
+    occuRoute[0] = 1;
+    // BFS
     while(!QueueIsEmpty(q)){
-        int path_id = QueueLeave(q);
+        int pathNum = QueueLeave(q);
         
         int i;
         for (i = 0; i < 30; i++) {
-            /* scan through the edge of this route */
             if (visited[i] == 1) {
-                /* don't need to search this node */
                 continue;
             }
 
-
-            if (g->edges[route[path_id]->tail->value][i] <= max) {
-                /* valid next vertex */
+            if (g->edges[routeList[pathNum]->tail->value][i] <= max) {
                 if (i == dest) {
-                    /* this vertex is the Destination */
-                    // try to return
-                    int k = 0;
- 
-                    QueueJoin(route[path_id],i);
-                    while (!QueueIsEmpty(route[path_id])){
-                        // append the record path into
-                        path[k] = (int)QueueLeave(route[path_id]);
-                        k++;
+                    // destination find
+                    int j = 0;
+                    QueueJoin(routeList[pathNum],i);
+                    while (!QueueIsEmpty(routeList[pathNum])){
+                        // add to path
+                        path[j] = (int)QueueLeave(routeList[pathNum]);
+                        j++;
                     }
 
-                    return k;
+                    return j;
                 }
 
-                int new_empty = routeEmpty();
-                
-                // malloc this path
-                route_occupy[new_empty]= 1;
+                int empty = routeEmpty();
 
-                // set this place is visited to it wouldn't be touched
+                if (empty == -1) {
+                    exit(1);
+                }
+                
+                occuRoute[empty]= 1;
+
+                // set visited
                 visited[i] = 1;
 
-                while (!QueueIsEmpty(route[new_empty])) {
-                    /* leave all the information in the queue */
-                    QueueLeave(route[new_empty]);
+                while (!QueueIsEmpty(routeList[empty])) {
+                    // leave information in the queue
+                    QueueLeave(routeList[empty]);
                 }
-                for (QueueNode *curr = route[path_id]->head ; curr != NULL; curr = curr->next) {
-                    /* copy all the node to dest */
-                    QueueJoin(route[new_empty], curr->value);
+                for (QueueNode *curr = routeList[pathNum]->head ; curr != NULL; curr = curr->next) {
+                    // copy nodes to dest
+                    QueueJoin(routeList[empty], curr->value);
                 }
-
 
                 // add the next vertex to this route
-                QueueJoin(route[new_empty],i);
-
-                // addsign this route to do BFS
-                QueueJoin(q,new_empty);
+                QueueJoin(routeList[empty],i);
+                // let this route to do BFS
+                QueueJoin(q,empty);
 
             }
         }
-        // free this path
-        route_occupy[path_id]= 0;
+        // clear the path
+        occuRoute[pathNum]= 0;
 
     }
 
-    // free the memory of Queue
+    // free Queues
     dropQueue(q);
-    for (int i = 0; i < 35; i++) {
-        /* free all the route */
-        dropQueue(route[i]);
+    for (int i = 0; i < 31; i++) {
+        dropQueue(routeList[i]);
     }
-<<<<<<< HEAD
-    
-	return 0;
-=======
-    printf("Uncussfull found \n\n" );
-    // couldn't find a path
-	return 0; // never find a path ... you need to fix this
->>>>>>> 8504876c7f561c4280d8f1b7404d6090e548fc0d
+
+	return 0; 
 }
