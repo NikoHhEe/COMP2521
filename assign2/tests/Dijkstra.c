@@ -10,6 +10,7 @@
 
 static ItemPQ createItem(int key, int value);
 static void updatePred(PredNode **list, int v, int w);
+static void updateDeletePred(PredNode **list, int v, int w);
 
 ShortestPaths dijkstra(Graph g, Vertex src) {
 	//init ShortestPaths
@@ -41,7 +42,7 @@ ShortestPaths dijkstra(Graph g, Vertex src) {
 		AdjList curr = out;
 		while (curr != NULL) {
 			int len = curr->weight;
-			if ((new.dist[s] + len) < (new.dist[curr->v])) {
+			if ((new.dist[s] + len) == (new.dist[curr->v])) {
 				//update dist
 				new.dist[curr->v] = (new.dist[s]) + len;
 				//update queue
@@ -49,6 +50,15 @@ ShortestPaths dijkstra(Graph g, Vertex src) {
 				PQUpdate(q, newDist);
 				//update pred
 				updatePred(new.pred, s, curr->v);
+			}
+			if ((new.dist[s] + len) < (new.dist[curr->v])) {
+				//update dist
+				new.dist[curr->v] = (new.dist[s]) + len;
+				//update queue
+				ItemPQ newDist = createItem(curr->v, new.dist[curr->v]);
+				PQUpdate(q, newDist);
+				//update pred
+				updateDeletePred(new.pred, s, curr->v);
 			}
 			curr = curr->next;
 		}
@@ -104,10 +114,17 @@ static ItemPQ createItem(int key, int value) {
 }
 
 static void updatePred(PredNode **list, int v, int n) {
-	//create new node
 	PredNode *new = malloc(sizeof(PredNode));
 	assert(new != NULL);
 	new->v = v;
 	new->next = list[n];
+	list[n] = new;
+}
+
+static void updateDeletePred(PredNode **list, int v, int n) {
+	PredNode *new = malloc(sizeof(PredNode));
+	assert(new != NULL);
+	new->v = v;
+	new->next = NULL;
 	list[n] = new;
 }
