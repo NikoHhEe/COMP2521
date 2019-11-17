@@ -6,63 +6,16 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+typedef struct Paths {
+    int NumPath;
+    int path[100][100];
+} Paths;
+
 static int numPaths(PredNode **pred, int j, PredNode *next);
-static int numPassi(PredNode **pred, int j, PredNode *next, int i);
+static int numPassi(PredNode **pred, int j, PredNode *next, int i, int f);
+//static Paths *getPath(Paths *new, PredNode **curr, int j, int k, int row, int col);
 
-NodeValues outDegreeCentrality(Graph g){
-	NodeValues out;
-	//alloct memory for new NodeValues
-    out.values = malloc(sizeof(double) * GraphNumVertices(g));
-    out.numNodes = GraphNumVertices(g) - 1;
-	int i;
-	//calculate values for node's values[]
-	for (i = 0; i < GraphNumVertices(g); i++) {
-	    AdjList outdegree = GraphOutIncident(g, i);
-	    AdjList curr = outdegree;
-	    double cnt = 0.0;
-	    while (curr != NULL) {
-	        cnt = cnt + 1.0;
-	        curr = curr->next;
-	    }
-	    out.values[i] = cnt;
-	}
-	return out;
-}
 
-NodeValues inDegreeCentrality(Graph g){
-	NodeValues in;
-	//alloct memory for new NodeValues
-	in.numNodes = GraphNumVertices(g) - 1;
-	in.values = malloc(sizeof(double) * GraphNumVertices(g));
-	int i;
-	//calculate values for node's values[]
-	for (i = 0; i < GraphNumVertices(g); i++) {
-	    AdjList indegree = GraphInIncident(g, i);
-	    AdjList curr = indegree;
-	    double cnt = 0.0;
-	    while (curr != NULL){
-	        cnt = cnt + 1.0;
-	        curr = curr->next;
-	    }
-	    in.values[i] = cnt;
-	}
-	return in;
-}
-
-NodeValues degreeCentrality(Graph g) {
-	int i;
-	NodeValues outd = outDegreeCentrality(g);
-	NodeValues ind = inDegreeCentrality(g);
-	NodeValues new;
-	//alloct memory for new NodeValues
-	new.values = malloc(sizeof(double) * GraphNumVertices(g));
-	new.numNodes = GraphNumVertices(g) - 1;
-	//calculate values for node's values[]
-	for (i = 0; i < GraphNumVertices(g); i++) {
-	    new.values[i] = outd.values[i] + ind.values[i];
-	}
-	return new;
-}
 
 NodeValues closenessCentrality(Graph g){
     NodeValues new;
@@ -103,25 +56,50 @@ NodeValues closenessCentrality(Graph g){
 }
 
 NodeValues betweennessCentrality(Graph g){
+    int NumVertices = GraphNumVertices(g);
 	NodeValues new;
-	new.numNodes = GraphNumVertices(g) - 1;
+	new.numNodes = NumVertices - 1;
 	new.values = malloc(sizeof(double) * GraphNumVertices(g));
 	int i;
-	for (i = 0; i < GraphNumVertices(g); i++) {
+	for (i = 0; i < NumVertices; i++) {
 	    double sum = 0.0;
 	    int j;
 	    int k;
-	    for (j = 0; j < GraphNumVertices(g); j++) {
+	    for (j = 0; j < NumVertices; j++) {
 	        //skip if j == i
 	        if (j == i) continue;
 	        ShortestPaths new = dijkstra(g, j);
-	        for (k = 0; k < GraphNumVertices(g); k++) {
+	        for (k = 0; k < NumVertices; k++) {
 	            //skip if i==j==k
 	            if (k == i || k == j) continue;
-	            //get # shortestpaths from j to k
+	            
+                /*
+                Paths *pInfo = calloc(1, sizeof(Paths));
+                pInfo->NumPath = 0;
+                
+                int row = 0, col = 0;
+                pInfo = getPath(pInfo, new.pred, j, k, row, col);
+                int countPass = 0;
+
+                for (int n = 0; n < pInfo->NumPath; n++) {
+                    int length = sizeof(pInfo->path[n]) / sizeof(int);
+                    for (int m = 0; m < length; m++) {
+                        printf("%d ->", pInfo->path[n][m]);
+                        if (pInfo->path[n][m] == i) {
+                            countPass++;
+                        }
+                    }
+                    printf("\n");
+                } 
+                */
+
+                //get # paths which pass i
+                int passi = numPassi(new.pred, j, new.pred[k], i, 0);
+                if (passi == 0) continue;
+                //get # shortestpaths from j to k
 	            int numOfPaths = numPaths(new.pred, j, new.pred[k]);
-                int passi = numPassi(new.pred, j, new.pred[k], i);
-                if (numOfPaths == 0 || passi == 0) continue;
+                if (numOfPaths == 0) continue;
+                
                 //convert num and passi to double
                 double up = (double)passi;
                 double down = (double)numOfPaths;
@@ -178,19 +156,40 @@ static int numPaths(PredNode **pred, int j, PredNode *next) {
     return numPaths(pred, j, pred[curr->v]) + numPaths(pred,j, curr->next);
 }
 
-static int numPassi(PredNode **pred, int j, PredNode *next, int i) {
+static int numPassi(PredNode **pred, int j, PredNode *next, int i, int f) {
     PredNode *curr = next;
     if (next == NULL) {
-        //if no path available
         return 0;
     } else if (curr->v == j) {
-        //find the end of the path and no one pass vertex i
-        return numPassi(pred, j, curr->next, i);
+        if (f == 1) {
+            return 1 + numPassi(pred, j, curr->next, i, f);
+        }
+        return numPassi(pred, j, curr->next, i, f);
     } else if (curr->v == i) {
-        //find a path that pass vertex i
-        return 1 + numPassi(pred, j, curr->next, i);
+        f = 1;
+        return numPassi(pred, j, pred[curr->v], i, f);
     } else {
-        //path not found and continue to find recursively
-        return numPassi(pred, j, pred[curr->v], i) + numPassi(pred, j, curr->next, i);
+        return numPassi(pred, j, pred[curr->v], i, f) + numPassi(pred, j, curr->next, i, f);
     }
 }
+/*
+// return a list of arrays which contains all the paths from j to k
+static Paths* getPath(Paths *new, PredNode **curr, int j, int k, int row, int col) {
+    
+    while (curr[k]->v != j) {
+        if (curr[k]->next == NULL) {
+            new->path[row][col++] = curr[k]->v;
+            k = curr[k]->v;
+        }
+        else {
+            row += 1;
+            for (int i = 0; i < col; i++) {
+                new->path[row][i] = new->path[row - 1][i];
+            }
+            
+            getPath(new, curr, j, k, row, col++);
+        }
+    }
+    new->NumPath++;
+    return new;
+}*/

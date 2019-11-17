@@ -1,0 +1,35 @@
+NV new: numNodes: 4
+     	values: _
+	     	_
+	     	_
+	     	_
+	     	_
+
+i: 0
+j: 1
+k: 2
+
+sum: 0.0
+
+SP new: numNodes: 5
+	src: 1
+	dist: 
+	pred: 
+
+numOfPaths: 
+numPassi: 
+
+--------------------------------------------------------
+curr: v:
+      next:
+
+new: numNodes: 5
+     src: 0
+     dist: 0 68 62 63 2
+     pred: NULL
+	   2 -> NULL
+	   4 -> NULL
+	   2 -> NULL
+	   0 -> NULL
+
+next: 

@@ -1,0 +1,29 @@
+new: numNodes: 5
+     src: 0
+     dist: 0 68 62 63 2
+     pred: NULL
+	   2 -> NULL
+	   4 -> NULL
+	   2 -> NULL
+	   0 -> NULL
+		   
+q: items: (1,68)
+   nunItems:
+   capacity:
+  
+update: key: 0
+	value: 0
+		
+sItem: key: 3
+       value: 63
+	   
+s: 3
+
+out: (1,5) -> (2,6) -> (4,1) -> NULL
+	  ^
+curr:
+
+len: 5
+
+newDist: key: 1
+	 value: 68

@@ -6,7 +6,7 @@
 #include "Dijkstra.h"
 #include "Graph.h"
 
-#define INFI 63356
+#define INFINITY 9999999
 
 static ItemPQ createItem(int key, int value);
 static void updatePred(PredNode **list, int v, int w);
@@ -25,7 +25,7 @@ ShortestPaths dijkstra(Graph g, Vertex src) {
 	PQ q = PQNew();
 	int i;
 	for (i = 0; i < new.numNodes; i++) {
-		new.dist[i] = INFI;
+		new.dist[i] = INFINITY;
 		new.pred[i] = NULL;
 		ItemPQ newItem = createItem(i, new.dist[i]);
 		PQAdd(q, newItem);
@@ -63,6 +63,14 @@ ShortestPaths dijkstra(Graph g, Vertex src) {
 			curr = curr->next;
 		}
 	}
+
+	// change all the unreachable distances from INFINITYnity to 0
+	for (int j = 0; j < new.numNodes; j++) {
+		if (new.dist[j] == INFINITY) {
+			new.dist[j] = 0;
+		}
+	} 
+
 	PQFree(q);
 	return new;
 }
