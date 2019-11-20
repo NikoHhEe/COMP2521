@@ -23,5 +23,6 @@ Dendrogram LanceWilliamsHAC(Graph g, int method) {
  * Frees all memory associated with the given Dendrogram structure.
  */
 void freeDendrogram(Dendrogram d) {
+    // free the dendrogram
     free(d);
 }

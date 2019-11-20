@@ -8,131 +8,141 @@
 
 #define INFINITY 9999999
 
-static ItemPQ createItem(int key, int value);
+static ItemPQ newItemPQ(int key, int value);
 static void updatePred(PredNode **list, int v, int w);
 static void updateDeletePred(PredNode **list, int v, int w);
 
 ShortestPaths dijkstra(Graph g, Vertex src) {
-	//init ShortestPaths
-	ShortestPaths new;
-	new.dist = malloc(sizeof(int) * (GraphNumVertices(g)));
-	assert((new.dist) != NULL);
-	new.pred = malloc(sizeof(struct PredNode) * (GraphNumVertices(g)));
-	assert((new.pred) != NULL);
-	new.src = src;
-	new.numNodes = GraphNumVertices(g);
-	//init dist and priority queue
+	//initialize ShortestPaths
+	ShortestPaths path;
+	path.dist = malloc(sizeof(int) * (GraphNumVertices(g)));
+	assert((path.dist) != NULL);
+	path.pred = malloc(sizeof(struct PredNode) * (GraphNumVertices(g)));
+	assert((path.pred) != NULL);
+	path.src = src;
+	path.numNodes = GraphNumVertices(g);
+	
+	//initialize dist
 	PQ q = PQNew();
-	int i;
-	for (i = 0; i < new.numNodes; i++) {
-		new.dist[i] = INFINITY;
-		new.pred[i] = NULL;
-		ItemPQ newItem = createItem(i, new.dist[i]);
+
+	// initialize priority queue
+	for (int i = 0; i < path.numNodes; i++) {
+		path.dist[i] = INFINITY;
+		path.pred[i] = NULL;
+		ItemPQ newItem = newItemPQ(i, path.dist[i]);
 		PQAdd(q, newItem);
 	}
-	new.dist[src] = 0;
-	//new.pred[src] = NULL;
 
-	ItemPQ update = createItem(src, new.dist[src]);
-	PQUpdate(q, update);
+	path.dist[src] = 0;
+
+	ItemPQ next = newItemPQ(src, path.dist[src]);
+	PQUpdate(q, next);
 	while (!PQIsEmpty(q)) {
-		ItemPQ sItem = PQDequeue(q);
-		Vertex s = sItem.key;
-		AdjList out = GraphOutIncident(g, s);
-		AdjList curr = out;
+		ItemPQ item = PQDequeue(q);
+		Vertex s = item.key;
+		AdjList outNode = GraphOutIncident(g, s);
+		AdjList curr = outNode;
 		while (curr != NULL) {
-			int len = curr->weight;
-			if ((new.dist[s] + len) == (new.dist[curr->v])) {
+			int cost = curr->weight;
+			// if find a prev node with the same distance to the src
+			if ((path.dist[s] + cost) == (path.dist[curr->v])) {
 				//update dist
-				new.dist[curr->v] = (new.dist[s]) + len;
+				path.dist[curr->v] = (path.dist[s]) + cost;
 				//update queue
-				ItemPQ newDist = createItem(curr->v, new.dist[curr->v]);
+				ItemPQ newDist = newItemPQ(curr->v, path.dist[curr->v]);
 				PQUpdate(q, newDist);
-				//update pred
-				updatePred(new.pred, s, curr->v);
+				// update pred by adding the node to pred 
+				updatePred(path.pred, s, curr->v);
 			}
-			if ((new.dist[s] + len) < (new.dist[curr->v])) {
+			// if find a prev node with less distance to the src
+			if ((path.dist[s] + cost) < (path.dist[curr->v])) {
 				//update dist
-				new.dist[curr->v] = (new.dist[s]) + len;
+				path.dist[curr->v] = (path.dist[s]) + cost;
 				//update queue
-				ItemPQ newDist = createItem(curr->v, new.dist[curr->v]);
+				ItemPQ newDist = newItemPQ(curr->v, path.dist[curr->v]);
 				PQUpdate(q, newDist);
-				//update pred
-				updateDeletePred(new.pred, s, curr->v);
+				//update pred by deleting the old nodes and add new pred node
+				updateDeletePred(path.pred, s, curr->v);
 			}
 			curr = curr->next;
 		}
 	}
 
-	// change all the unreachable distances from INFINITYnity to 0
-	for (int j = 0; j < new.numNodes; j++) {
-		if (new.dist[j] == INFINITY) {
-			new.dist[j] = 0;
+	// change all the unreachable distances from infinity to 0
+	for (int j = 0; j < path.numNodes; j++) {
+		if (path.dist[j] == INFINITY) {
+			path.dist[j] = 0;
 		}
 	} 
 
 	PQFree(q);
-	return new;
+	return path;
 }
 
-void  showShortestPaths(ShortestPaths s) {
-	int i = 0;
-	printf("Node %d\n",s.src);
+// show the information of all the nodes as src
+void  showShortestPaths(ShortestPaths sps) {
+	printf("Node %d\n",sps.src);
 	printf("  Distance\n");
-	for (i = 0; i < s.numNodes; i++) {
-		if(i == s.src)
-	    	printf("    %d : X\n",i);
+	for (int i = 0; i < sps.numNodes; i++) {
+		if(i == sps.src)
+	    	printf("    %d : X\n", i);
 		else
-			printf("    %d : %d\n",i,s.dist[i]);
+			printf("    %d : %d\n", i, sps.dist[i]);
 	}
 	printf("  Preds\n");
-	for (i = 0; i < s.numNodes; i++) {
+	for (int i = 0; i < sps.numNodes; i++) {
 		printf("    %d : ",i);
-		PredNode* curr = s.pred[i];
-		while(curr!=NULL) {
-			printf("[%d]->",curr->v);
+		PredNode* curr = sps.pred[i];
+		while(curr != NULL) {
+			printf("[%d]->", curr->v);
 			curr = curr->next;
 		}
 		printf("NULL\n");
 	}
 }
 
-void  freeShortestPaths(ShortestPaths s) {
+// free the memory of shortest path
+void  freeShortestPaths(ShortestPaths sps) {
 	int i;
-	//free distance
-	free(s.dist);
-	//free pred
-	for (i = 0; i < s.numNodes; i++) {
-		if (s.pred[i] == NULL) continue;
-		PredNode *curr = s.pred[i];
+	// free dist
+	free(sps.dist);
+	// free pred list
+	for (i = 0; i < sps.numNodes; i++) {
+		if (sps.pred[i] == NULL) continue;
+		PredNode *curr = sps.pred[i];
 		while (curr != NULL) {
 			PredNode *temp = curr->next;
 			free(curr);
 			curr = temp;
 		}
 	}
-	free(s.pred);
+	free(sps.pred);
 }
 
-static ItemPQ createItem(int key, int value) {
-	ItemPQ new;
-	new.key = key;
-	new.value = value;
-	return new;
+// create a new ItemPQ
+static ItemPQ newItemPQ(int key, int value) {
+	ItemPQ item;
+	item.key = key;
+	item.value = value;
+	return item;
 }
 
+// update the pred list without deleting existing nodes in the list
+// used when finding a prev node with the same distance to the src
 static void updatePred(PredNode **list, int v, int n) {
-	PredNode *new = malloc(sizeof(PredNode));
-	assert(new != NULL);
-	new->v = v;
-	new->next = list[n];
-	list[n] = new;
+	PredNode *node = malloc(sizeof(PredNode));
+	assert(node != NULL);
+	node->v = v;
+	node->next = list[n];
+	list[n] = node;
 }
 
+// update the pred list and deleting the existing nodes in the list
+// used when finding a pred node with less distance to the src
 static void updateDeletePred(PredNode **list, int v, int n) {
-	PredNode *new = malloc(sizeof(PredNode));
-	assert(new != NULL);
-	new->v = v;
-	new->next = NULL;
-	list[n] = new;
+	PredNode *node = malloc(sizeof(PredNode));
+	assert(node != NULL);
+	node->v = v;
+	node->next = NULL;
+	list[n] = node;
 }

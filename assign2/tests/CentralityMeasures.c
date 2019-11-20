@@ -1,4 +1,6 @@
-// Graph ADT interface for Ass2 (COMP2521)
+// Centrality Measures ADT implementation
+// COMP2521 Assignment 2
+
 #include "CentralityMeasures.h"
 #include "Dijkstra.h"
 #include "Graph.h"
@@ -6,148 +8,160 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-typedef struct Paths {
-    int NumPath;
-    int path[100][100];
-} Paths;
-
 static int numPaths(PredNode **pred, int j, PredNode *next);
-static int numPassi(PredNode **pred, int j, PredNode *next, int i, int f);
-//static Paths *getPath(Paths *new, PredNode **curr, int j, int k, int row, int col);
+static int numPathi(PredNode **pred, int j, PredNode *next, int i, int flag);
 
-
-
+// calculate the closeness parameter of the nodes
 NodeValues closenessCentrality(Graph g){
-    NodeValues new;
-    new.numNodes = GraphNumVertices(g) - 1;
-    new.values = malloc(sizeof(double) * GraphNumVertices(g));
-    int i;
-    for (i = 0; i < GraphNumVertices(g); i++) {
-        //count # of vertices that i can reach
-        double cnt = 1.0;
-        int m;
-        ShortestPaths newpath = dijkstra(g, i);
-        for (m = 0; m < GraphNumVertices(g); m++) {
-            if (newpath.pred[m] != NULL) {
-                cnt = cnt + 1.0;
+    // initialize the result
+    NodeValues result;
+    result.numNodes = GraphNumVertices(g) - 1;
+    result.values = malloc(sizeof(double) * GraphNumVertices(g));
+    for (int i = 0; i < GraphNumVertices(g); i++) {
+        // count num of vertices that i can reach
+        double count = 1.0;
+
+        // get the information of path start from i
+        ShortestPaths path = dijkstra(g, i);
+        for (int j = 0; j < GraphNumVertices(g); j++) {
+            if (path.pred[j] != NULL) {
+                count += 1.0;
             }
         }
-        //calculate sum of all paths
+
+        // calculate sum of all paths
         double dist = 0.0;
-        int j;
         double sum = 0.0;
-        for (j = 0; j < GraphNumVertices(g); j++) {
-            dist = (double)(newpath.dist[j]);
+        for (int j = 0; j < GraphNumVertices(g); j++) {
+            dist = (double)(path.dist[j]);
             sum = sum + dist;
         }
-        //get final res
-        double numNodes = (double)(new.numNodes);
+
+        double numNodes = (double)(result.numNodes);
+        // skip if sum = 0
         if (sum == 0) {
-            new.values[i] = 0.0;
+            result.values[i] = 0.0;
             continue;
         }
-        //multiply left and right to get values[i]
-        double left = (cnt - 1.0)/numNodes;
-        double right = (cnt - 1.0)/sum;
-        new.values[i] = left * right;
-    }
-            
-     return new;
+        double result1 = (count - 1.0)/numNodes;
+        double result2 = (count - 1.0)/sum;
+        result.values[i] = result1 * result2;
+    }        
+    return result;
 }
 
+// calculate the betweeness parameter of the nodes
 NodeValues betweennessCentrality(Graph g){
-    int NumVertices = GraphNumVertices(g);
-	NodeValues new;
-	new.numNodes = NumVertices - 1;
-	new.values = malloc(sizeof(double) * GraphNumVertices(g));
-	int i;
-	for (i = 0; i < NumVertices; i++) {
+    // initialize the result
+    int NumV = GraphNumVertices(g);
+	NodeValues result;
+	result.numNodes = NumV - 1;
+	result.values = malloc(sizeof(double) * GraphNumVertices(g));
+	
+    // check all the nodes to see their betweeness
+    for (int i = 0; i < NumV; i++) {
 	    double sum = 0.0;
-	    int j;
-	    int k;
-	    for (j = 0; j < NumVertices; j++) {
-	        //skip if j == i
-	        if (j == i) continue;
+	    for (int j = 0; j < NumV; j++) {
 	        ShortestPaths new = dijkstra(g, j);
-	        for (k = 0; k < NumVertices; k++) {
+	        for (int k = 0; k < NumV; k++) {
 	            //skip if i==j==k
-	            if (k == i || k == j) continue;
-	        
-                //get # paths which pass i
-                int passi = numPassi(new.pred, j, new.pred[k], i, 0);
-                if (passi == 0) continue;
-                //get # shortestpaths from j to k
-	            int numOfPaths = numPaths(new.pred, j, new.pred[k]);
-                if (numOfPaths == 0) continue;
+	            if (j == i || k == i || k == j) {
+                    continue;
+                }
+                //get num of paths which pass i amony paths from j to k
+                int numi = numPathi(new.pred, j, new.pred[k], i, 0);
+                if (numi == 0) continue;
+
+                //get num of shortestpaths from j to k
+	            int numPath = numPaths(new.pred, j, new.pred[k]);
+                if (numPath == 0) continue;
                 
-                //convert num and passi to double
-                double up = (double)passi;
-                double down = (double)numOfPaths;
-                double depend = up/down;
-                sum = sum + depend;
+                // calculate the partial result and add to sum
+                double result1 = (double)numi;
+                double result2 = (double)numPath;
+                double partial = result1 / result2;
+                sum += partial;
 	        }
 	    }
-	    new.values[i] = sum;
+	    result.values[i] = sum;
 	}
-	return new;
+	return result;
 }
 
+// normalised betweenness
 NodeValues betweennessCentralityNormalised(Graph g){
-    NodeValues b = betweennessCentrality(g);
-    NodeValues normal;
-    normal.values = malloc(sizeof(double) * GraphNumVertices(g));
-    normal.numNodes = GraphNumVertices(g) - 1;
-    int n = GraphNumVertices(g);
-    //calculate denominator as int
-    int denominator = (n-1) * (n-2);
-    //convert int to double
-    double de = (double)(denominator);
-    //normalise all betweeness and place them into node.values[]
-    int i;
-    for (i = 0; i < n; i++)  {
-        double left = 1/de;
-        double right = (double)(b.values[i]);
-        normal.values[i] = left * right;
+    // get the original betweenness
+    NodeValues between = betweennessCentrality(g);
+    
+    // initialise the normalised result
+    NodeValues normalBetween;
+    normalBetween.values = malloc(sizeof(double) * GraphNumVertices(g));
+    normalBetween.numNodes = GraphNumVertices(g) - 1;
+    
+    int numV = GraphNumVertices(g);
+    // calculate the divider
+    int divide = (numV - 1) * (numV - 2);
+    double ddivide = (double)(divide);
+
+    // apply the division to every value of the result
+    for (int i = 0; i < numV; i++)  {
+        double result = (double)(between.values[i]) / ddivide;
+        normalBetween.values[i] = result;
     }
-    return normal;
+    return normalBetween;
 }
 
-void showNodeValues(NodeValues values){
-    int i;
-    for (i = 0; i <= values.numNodes; i++) {
-        printf("%d: %.6lf\n", i, values.values[i]);
+// show the centrality result of the nodes
+void showNodeValues(NodeValues nvs){
+    for (int i = 0; i <= nvs.numNodes; i++) {
+        printf("%d: %.6lf\n", i, nvs.values[i]);
     }
 }
 
-void freeNodeValues(NodeValues values){
-    free(values.values);
+// free the values of nodeValues
+void freeNodeValues(NodeValues nvs){
+    free(nvs.values);
 }
 
-static int numPaths(PredNode **pred, int j, PredNode *next) {
-    PredNode *curr = next;
-    //if no path available
-    if (curr == NULL) return 0;
-    //if find one path and continue to next pred node
-    if (curr->v == j) {
+// calculate the num of paths from j to k
+static int numPaths(PredNode **pred, int j, PredNode *node) {
+    PredNode *curr = node;
+    if (curr == NULL) {
+        return 0;
+    }
+    // if find a path then check the next pred node
+    else if (curr->v == j) {
         return 1 + numPaths(pred, j, curr->next);
     }
-    //normal case(path not found and continue to find recursively)
+    // if no path is found, check the next pred node 
+    // and the pred node of the current node recursively
     return numPaths(pred, j, pred[curr->v]) + numPaths(pred,j, curr->next);
 }
 
-static int numPassi(PredNode **pred, int j, PredNode *next, int i, int f) {
-    PredNode *curr = next;
-    if (next == NULL) {
+// calculate the num of paths from j to k which passes i
+static int numPathi(PredNode **pred, int j, PredNode *node, int i, int flag) {
+    PredNode *curr = node;
+    if (curr == NULL) {
         return 0;
-    } else if (curr->v == j) {
-        if (f == 1) {
-            return 1 + numPassi(pred, j, curr->next, i, f);
+    } 
+    // if come to node j, check the flag variable
+    else if (curr->v == j) {
+        // if flag == 1 add 1 to the result and 
+        // recursively check the next pred node
+        if (flag == 1) {
+            return 1 + numPathi(pred, j, curr->next, i, flag);
         }
-        return numPassi(pred, j, curr->next, i, f);
-    } else if (curr->v == i) {
-        f = 1;
-        return numPassi(pred, j, pred[curr->v], i, f);
-    } else {
-        return numPassi(pred, j, pred[curr->v], i, f) + numPassi(pred, j, curr->next, i, f);
+        // else just call recursively
+        return numPathi(pred, j, curr->next, i, flag);
+    } 
+    // if the node is i
+    else if (curr->v == i) {
+        // set the flag variable to 1 and recursively check the pred node
+        flag = 1;
+        return numPathi(pred, j, pred[curr->v], i, flag);
+    } 
+    // otherwise just recursively check the next pred node and the pred node
+    else {
+        return numPathi(pred, j, pred[curr->v], i, flag) + numPathi(pred, j, curr->next, i, flag);
     }
 }
