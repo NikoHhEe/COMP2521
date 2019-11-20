@@ -72,27 +72,7 @@ NodeValues betweennessCentrality(Graph g){
 	        for (k = 0; k < NumVertices; k++) {
 	            //skip if i==j==k
 	            if (k == i || k == j) continue;
-	            
-                /*
-                Paths *pInfo = calloc(1, sizeof(Paths));
-                pInfo->NumPath = 0;
-                
-                int row = 0, col = 0;
-                pInfo = getPath(pInfo, new.pred, j, k, row, col);
-                int countPass = 0;
-
-                for (int n = 0; n < pInfo->NumPath; n++) {
-                    int length = sizeof(pInfo->path[n]) / sizeof(int);
-                    for (int m = 0; m < length; m++) {
-                        printf("%d ->", pInfo->path[n][m]);
-                        if (pInfo->path[n][m] == i) {
-                            countPass++;
-                        }
-                    }
-                    printf("\n");
-                } 
-                */
-
+	        
                 //get # paths which pass i
                 int passi = numPassi(new.pred, j, new.pred[k], i, 0);
                 if (passi == 0) continue;
@@ -105,7 +85,6 @@ NodeValues betweennessCentrality(Graph g){
                 double down = (double)numOfPaths;
                 double depend = up/down;
                 sum = sum + depend;
-                //if (i == 47) printf("sum = %lf\n", sum);
 	        }
 	    }
 	    new.values[i] = sum;
@@ -172,24 +151,3 @@ static int numPassi(PredNode **pred, int j, PredNode *next, int i, int f) {
         return numPassi(pred, j, pred[curr->v], i, f) + numPassi(pred, j, curr->next, i, f);
     }
 }
-/*
-// return a list of arrays which contains all the paths from j to k
-static Paths* getPath(Paths *new, PredNode **curr, int j, int k, int row, int col) {
-    
-    while (curr[k]->v != j) {
-        if (curr[k]->next == NULL) {
-            new->path[row][col++] = curr[k]->v;
-            k = curr[k]->v;
-        }
-        else {
-            row += 1;
-            for (int i = 0; i < col; i++) {
-                new->path[row][i] = new->path[row - 1][i];
-            }
-            
-            getPath(new, curr, j, k, row, col++);
-        }
-    }
-    new->NumPath++;
-    return new;
-}*/
